@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer implements IVocal {
     @Unique
-    private ResourceLocation vocalized$voiceId = BuiltInVoiceType.DEFAULT.get().getId();
+    private ResourceLocation vocalized$voiceId = BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier();
     @Unique
-    private ResourceLocation vocalized$defaultVoiceId = BuiltInVoiceType.DEFAULT.get().getId();
+    private ResourceLocation vocalized$defaultVoiceId = BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier();
 
     @Override
     public ResourceLocation vocalized$getVoiceId() {
@@ -53,8 +53,9 @@ public abstract class MixinServerPlayer implements IVocal {
         if (tag.contains("voice")) vocalized$voiceId = ResourceLocation.tryParse(tag.getString("voice"));
         if (tag.contains("default_voice"))
             vocalized$defaultVoiceId = ResourceLocation.tryParse(tag.getString("default_voice"));
-        if (vocalized$voiceId == null) vocalized$voiceId = BuiltInVoiceType.DEFAULT.get().getId();
-        if (vocalized$defaultVoiceId == null) vocalized$defaultVoiceId = BuiltInVoiceType.DEFAULT.get().getId();
+        if (vocalized$voiceId == null) vocalized$voiceId = BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier();
+        if (vocalized$defaultVoiceId == null)
+            vocalized$defaultVoiceId = BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier();
     }
 
     @Inject(method = "restoreFrom", at = @At("TAIL"))

@@ -3,6 +3,8 @@ package committee.nova.vocalized.common.voice;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.PacketDistributor;
 
+import javax.annotation.Nullable;
+
 public class VoiceContext {
     private final TargetDeterminer target;
     private final VoiceOffset offset;
@@ -44,6 +46,6 @@ public class VoiceContext {
     }
 
     public interface TargetDeterminer {
-        PacketDistributor.PacketTarget determine(ServerPlayer sender);
+        PacketDistributor.PacketTarget determine(@Nullable ServerPlayer sender);
     }
 }

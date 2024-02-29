@@ -1,0 +1,9 @@
+{
+  "screen.vocalized.button.play_bio": "Play Bio",
+  "screen.vocalized.cfg.selection.voice_type": "Voice Type",
+  "screen.vocalized.cfg.title": "Vocalized Settings",
+  "vocalized.voice_type.vocalized.builtin_female": "Salli [BuiltIn]",
+  "vocalized.voice_type.vocalized.builtin_female.desc": "Female, English(United States)",
+  "vocalized.voice_type.vocalized.builtin_male": "Matthew [BuiltIn]",
+  "vocalized.voice_type.vocalized.builtin_male.desc": "Male, English(United States)"
+}

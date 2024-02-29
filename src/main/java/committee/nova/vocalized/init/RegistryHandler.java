@@ -18,7 +18,6 @@ public class RegistryHandler {
         BuiltInVoiceType.init();
         BuiltInVoiceMessage.init();
         BuiltInVoiceMessageType.init();
-        //if (FMLEnvironment.dist.isClient()) ClientRegistryHandler.initSound();
         SoundEventRef.init();
     }
 }

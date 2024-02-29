@@ -30,5 +30,13 @@
         "stream": true
       }
     ]
+  },
+  "vocalized.builtin_male.vocalized.bio": {
+    "sounds": [
+      {
+        "name": "vocalized:builtin_male/bio",
+        "stream": true
+      }
+    ]
   }
 }

@@ -4,6 +4,7 @@ import committee.nova.vocalized.Vocalized;
 import committee.nova.vocalized.api.IVoiceMessage;
 import committee.nova.vocalized.api.IVoiceType;
 import committee.nova.vocalized.common.ref.BuiltInVoiceType;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -14,9 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@MethodsReturnNonnullByDefault
 public class VoiceType implements IVoiceType {
     private final ResourceLocation id;
-    private Component name;
+    private String keyCache;
+    private Component nameCache;
     private final Map<IVoiceMessage, Optional<ResourceLocation>> soundMap = new HashMap<>();
 
     public VoiceType(ResourceLocation id) {
@@ -24,15 +27,14 @@ public class VoiceType implements IVoiceType {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public ResourceLocation getIdentifier() {
         return id;
     }
 
     @Override
     public Component getName() {
-        if (name == null) name = Component.translatable("vocalized.voice_type." + getId().toString()
-                .replace(':', '.'));
-        return name;
+        if (nameCache == null) nameCache = Component.translatable(getKey());
+        return nameCache;
     }
 
     @Override
@@ -43,8 +45,8 @@ public class VoiceType implements IVoiceType {
                 Vocalized.MODID,
                 String.format(
                         "%s.%s.%s.%s",
-                        getId().getNamespace(),
-                        getId().getPath(),
+                        getIdentifier().getNamespace(),
+                        getIdentifier().getPath(),
                         msg.getId().getNamespace(),
                         msg.getId().getPath()
                 )
@@ -59,6 +61,12 @@ public class VoiceType implements IVoiceType {
 
     @Override
     public IVoiceType getDefaultVoiceType() {
-        return BuiltInVoiceType.DEFAULT.get();
+        return BuiltInVoiceType.BUILTIN_FEMALE.get();
+    }
+
+    @Override
+    public String getKey() {
+        if (keyCache == null) keyCache = "vocalized.voice_type." + getIdentifier().toString().replace(':', '.');
+        return keyCache;
     }
 }

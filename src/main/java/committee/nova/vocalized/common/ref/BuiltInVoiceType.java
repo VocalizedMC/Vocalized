@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 public enum BuiltInVoiceType implements Supplier<VoiceType> {
-    DEFAULT,
     BUILTIN_FEMALE,
     BUILTIN_MALE;
 

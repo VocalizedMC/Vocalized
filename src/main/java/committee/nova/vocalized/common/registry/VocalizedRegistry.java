@@ -16,7 +16,7 @@ public class VocalizedRegistry {
     private final Map<ResourceLocation, IVoiceMessageType> voiceMessageTypes = new HashMap<>();
 
     public boolean registerVoiceType(IVoiceType type) {
-        final ResourceLocation id = type.getId();
+        final ResourceLocation id = type.getIdentifier();
         if (voiceTypes.containsKey(id)) {
             Vocalized.LOGGER.warn("Trying to register voice type {}, duplicated and skipped!", id.toString());
             return false;

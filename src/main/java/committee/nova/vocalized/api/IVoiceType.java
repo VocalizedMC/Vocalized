@@ -2,11 +2,12 @@ package committee.nova.vocalized.api;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.OptionEnum;
 
 import java.util.Optional;
 
-public interface IVoiceType {
-    ResourceLocation getId();
+public interface IVoiceType extends OptionEnum {
+    ResourceLocation getIdentifier();
 
     Component getName();
 
@@ -20,5 +21,10 @@ public interface IVoiceType {
 
     default float getPitch(IVoiceMessage msg) {
         return msg.getPitch();
+    }
+
+    @Override
+    default int getId() {
+        return 0;// Dummy, this is not a real enum, so it has no actual ordinal.
     }
 }
