@@ -8,13 +8,12 @@ import committee.nova.vocalized.common.ref.BuiltInVoiceType;
 import committee.nova.vocalized.common.registry.VocalizedRegistry;
 import committee.nova.vocalized.common.voice.VoiceOffset;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
@@ -28,24 +27,22 @@ public class VocalizedClientManager {
             ResourceLocation msgId, ResourceLocation msgTypeId,
             Vec3 pos, VoiceOffset voiceOffset
     ) {
-        final Player player = Minecraft.getInstance().player;
+        final LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
-        final ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) return;
         final long currentTime = System.currentTimeMillis();
-        final Vec3 targetPos = voiceOffset.offset(pos, player.position());
+        final Vec3 targetPos = voiceOffset.offset(pos, player.getEyePosition());
         if (currentTime - lastPlayedTime < 1000) {
-            playNotificationSound(level, msgTypeId, targetPos, voiceOffset.isRadio());
+            playNotificationSound(msgTypeId, targetPos, voiceOffset.isRadio());
             return;
         }
-        if (playVoiceSound(level, voiceId, defaultVoiceId, msgId, targetPos)) {
+        if (playVoiceSound(voiceId, defaultVoiceId, msgId, targetPos)) {
             lastPlayedTime = currentTime;
             return;
         }
-        playNotificationSound(level, msgTypeId, targetPos, voiceOffset.isRadio());
+        playNotificationSound(msgTypeId, targetPos, voiceOffset.isRadio());
     }
 
-    public static void playNotificationSound(ClientLevel level, ResourceLocation msgTypeId, Vec3 pos, boolean viaRadio) {
+    public static void playNotificationSound(ResourceLocation msgTypeId, Vec3 pos, boolean viaRadio) {
         final IVoiceMessageType type = VocalizedRegistry.INSTANCE.getVoiceMessageTypeOrDefault(
                 msgTypeId,
                 viaRadio ? BuiltInVoiceMessageType.RADIO.get() : BuiltInVoiceMessageType.COMMON.get()
@@ -56,7 +53,6 @@ public class VocalizedClientManager {
     }
 
     public static boolean playVoiceSound(
-            ClientLevel level,
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, Vec3 pos
     ) {
@@ -91,8 +87,8 @@ public class VocalizedClientManager {
                 pos.x, pos.y, pos.z, false
         );
         if (delay && d0 > 100.0D) {
-            double d1 = Math.sqrt(d0) / 40.0D;
-            minecraft.getSoundManager().playDelayed(simplesoundinstance, (int) (d1 * 20.0D));
+            final double d1 = Math.sqrt(d0) / 40.0D;
+            minecraft.getSoundManager().playDelayed(simplesoundinstance, (int) (d1 * 20.0));
         } else minecraft.getSoundManager().play(simplesoundinstance);
     }
 }
