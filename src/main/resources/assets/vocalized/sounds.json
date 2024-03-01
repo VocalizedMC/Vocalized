@@ -23,7 +23,7 @@
       }
     ]
   },
-  "vocalized.builtin_female.vocalized.bio": {
+  "builtin_female.vocalized.bio": {
     "sounds": [
       {
         "name": "vocalized:builtin_female/bio",
@@ -31,7 +31,7 @@
       }
     ]
   },
-  "vocalized.builtin_male.vocalized.bio": {
+  "builtin_male.vocalized.bio": {
     "sounds": [
       {
         "name": "vocalized:builtin_male/bio",

@@ -1,6 +1,5 @@
 package committee.nova.vocalized.common.voice;
 
-import committee.nova.vocalized.Vocalized;
 import committee.nova.vocalized.api.IVoiceMessage;
 import committee.nova.vocalized.api.IVoiceType;
 import committee.nova.vocalized.common.ref.BuiltInVoiceType;
@@ -42,16 +41,15 @@ public class VoiceType implements IVoiceType {
     public Optional<ResourceLocation> getVoice(IVoiceMessage msg) {
         if (soundMap.containsKey(msg)) return soundMap.get(msg);
         final ResourceLocation targetRl = new ResourceLocation(
-                Vocalized.MODID,
+                getIdentifier().getNamespace(),
                 String.format(
-                        "%s.%s.%s.%s",
-                        getIdentifier().getNamespace(),
+                        "%s.%s.%s",
                         getIdentifier().getPath(),
                         msg.getId().getNamespace(),
                         msg.getId().getPath()
                 )
         );
-        // e.g.: vocalized:vocalized.builtin_male.vocalized.bio
+        // e.g.: vocalized:builtin_male.vocalized.bio
         final Optional<ResourceLocation> ret = Minecraft.getInstance().getSoundManager().getSoundEvent(targetRl) != null ?
                 Optional.of(targetRl) :
                 Optional.empty();
