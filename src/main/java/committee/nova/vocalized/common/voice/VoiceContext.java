@@ -3,15 +3,16 @@ package committee.nova.vocalized.common.voice;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.PacketDistributor;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 public class VoiceContext {
     private final TargetDeterminer target;
-    private final VoiceOffset offset;
+    private final VoiceEffect effect;
 
-    private VoiceContext(TargetDeterminer target, VoiceOffset offset) {
+    private VoiceContext(TargetDeterminer target, VoiceEffect effect) {
         this.target = target;
-        this.offset = offset;
+        this.effect = effect;
     }
 
     public static Builder builder() {
@@ -22,20 +23,20 @@ public class VoiceContext {
         return target;
     }
 
-    public VoiceOffset getOffset() {
-        return offset;
+    public VoiceEffect getEffect() {
+        return effect;
     }
 
     public static class Builder {
-        private TargetDeterminer target = p -> PacketDistributor.ALL.noArg();
-        private VoiceOffset offset = VoiceOffset.RADIO;
+        private TargetDeterminer target = p -> Collections.singletonList(PacketDistributor.ALL.noArg());
+        private VoiceEffect offset = VoiceEffect.RADIO;
 
         public Builder target(TargetDeterminer target) {
             this.target = target;
             return this;
         }
 
-        public Builder offset(VoiceOffset offset) {
+        public Builder offset(VoiceEffect offset) {
             this.offset = offset;
             return this;
         }
@@ -46,6 +47,6 @@ public class VoiceContext {
     }
 
     public interface TargetDeterminer {
-        PacketDistributor.PacketTarget determine(@Nullable ServerPlayer sender);
+        List<PacketDistributor.PacketTarget> determine(ServerPlayer sender);
     }
 }

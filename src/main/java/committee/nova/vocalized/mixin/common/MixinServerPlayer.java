@@ -1,4 +1,4 @@
-package committee.nova.vocalized.mixin;
+package committee.nova.vocalized.mixin.common;
 
 import committee.nova.vocalized.api.IVocal;
 import committee.nova.vocalized.common.ref.BuiltInVoiceType;

@@ -5,23 +5,23 @@ import committee.nova.vocalized.common.registry.VocalizedRegistry;
 import committee.nova.vocalized.common.voice.VoiceMessage;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Locale;
 import java.util.function.Supplier;
 
 public enum BuiltInVoiceMessage implements Supplier<VoiceMessage> {
-    BIO;
+    BIO(VoiceMessage.builder(new ResourceLocation(Vocalized.MODID, "bio"))
+            .messageType(BuiltInVoiceMessageType.COMMON.get())
+            .build());
 
-    private final VoiceMessage msg;
+    private final VoiceMessage obj;
 
-    BuiltInVoiceMessage() {
-        final VoiceMessage msg = new VoiceMessage(new ResourceLocation(Vocalized.MODID, this.name().toLowerCase(Locale.ROOT)));
-        VocalizedRegistry.INSTANCE.registerVoiceMessage(msg);
-        this.msg = msg;
+    BuiltInVoiceMessage(VoiceMessage obj) {
+        VocalizedRegistry.INSTANCE.registerVoiceMessage(obj);
+        this.obj = obj;
     }
 
     @Override
     public VoiceMessage get() {
-        return msg;
+        return obj;
     }
 
     public static void init() {

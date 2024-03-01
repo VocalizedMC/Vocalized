@@ -5,9 +5,10 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "vocalized.refmap.json",
   "mixins": [
-    "MixinServerPlayer"
+    "common.MixinServerPlayer"
   ],
   "client": [
+    "client.MixinMinecraft"
   ],
   "injectors": {
     "defaultRequire": 1

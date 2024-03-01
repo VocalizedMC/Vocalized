@@ -8,10 +8,12 @@ import net.minecraft.resources.ResourceLocation;
 
 public class VoiceMessage implements IVoiceMessage {
     private final ResourceLocation id;
+    private final IVoiceMessageType messageType;
     private Component name;
 
-    public VoiceMessage(ResourceLocation id) {
+    private VoiceMessage(ResourceLocation id, IVoiceMessageType messageType) {
         this.id = id;
+        this.messageType = messageType;
     }
 
     @Override
@@ -31,6 +33,28 @@ public class VoiceMessage implements IVoiceMessage {
 
     @Override
     public IVoiceMessageType getType() {
-        return BuiltInVoiceMessageType.RADIO.get();
+        return messageType;
+    }
+
+    public static Builder builder(ResourceLocation id) {
+        return new Builder(id);
+    }
+
+    public static class Builder {
+        private final ResourceLocation id;
+        private IVoiceMessageType messageType = BuiltInVoiceMessageType.RADIO.get();
+
+        private Builder(ResourceLocation id) {
+            this.id = id;
+        }
+
+        public Builder messageType(IVoiceMessageType messageType) {
+            this.messageType = messageType;
+            return this;
+        }
+
+        public VoiceMessage build() {
+            return new VoiceMessage(id, messageType);
+        }
     }
 }
