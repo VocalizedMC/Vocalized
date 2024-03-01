@@ -70,7 +70,7 @@ public class ClientConfigScreen extends Screen {
         g.drawCenteredString(font, title, width / 2, titleOffset, 0xFFFFFF);
         super.render(g, mouseX, mouseY, partialTicks);
         if (playing == null) return;
-        ClientUtilities.getVoiceMessageText(playing.getLocation(), BuiltInVoiceMessage.BIO.get().getId(), voiceType.get().getName())
+        ClientUtilities.getVoiceMessageText(playing.getLocation(), voiceType.get().getIdentifier(), BuiltInVoiceMessage.BIO.get().getId(), voiceType.get().getName())
                 .ifPresent(c -> {
                     final List<FormattedCharSequence> seq = font.split(c, 150);
                     for (int l = 0; l < seq.size(); ++l) {

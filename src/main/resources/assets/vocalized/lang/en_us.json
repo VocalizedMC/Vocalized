@@ -1,8 +1,8 @@
 {
-  "msg.voice_message.default.vocalized.bio": "'%s' is self-introducing.",
-  "msg.voice_message.vocalized.matthew.vocalized.bio": "Hi! This is Matthew, the built-in male voice of the Vocalized mod, powered by Amazon Polly.",
-  "msg.voice_message.vocalized.salli.vocalized.bio": "Hi! Here's Salli, the built-in female voice of the Vocalized mod, powered by Amazon Polly.",
-  "msg.voice_message.vocalized.zhi_yu.vocalized.bio": "您好，我叫知语，是 Vocalized 模组的内置中文语音，由 Amazon Polly 提供技术支持。",
+  "v_msg.default.vocalized.bio": "'%s' is self-introducing.",
+  "v_msg.vocalized.matthew.vocalized.bio": "Hi! This is Matthew, the built-in male voice of the Vocalized mod, powered by Amazon Polly.",
+  "v_msg.vocalized.salli.vocalized.bio": "Hi! Here's Salli, the built-in female voice of the Vocalized mod, powered by Amazon Polly.",
+  "v_msg.vocalized.zhi_yu.vocalized.bio": "您好，我叫知语，是 Vocalized 模组的内置中文语音，由 Amazon Polly 提供技术支持。",
   "screen.vocalized.button.play_bio": "Play Bio",
   "screen.vocalized.cfg.selection.voice_type": "Voice Type",
   "screen.vocalized.cfg.title": "Vocalized Settings",

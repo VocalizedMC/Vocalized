@@ -42,17 +42,17 @@ public class VocalizedClientManager {
         }
         if (voiceOwner == null) return;
         if (_playVoiceSoundInWorld(voiceId, defaultVoiceId, msgId, voiceOwner, senderName)) return;
-        _playNotificationSoundInWorld(msgId, msgTypeId, voiceOffset.isRadio(), senderName);
+        _playNotificationSoundInWorld(voiceId, msgId, msgTypeId, voiceOffset.isRadio(), senderName);
     }
 
-    private static void _playNotificationSoundInWorld(ResourceLocation msgId, ResourceLocation msgTypeId, boolean viaRadio, String senderName) {
+    private static void _playNotificationSoundInWorld(ResourceLocation voiceId, ResourceLocation msgId, ResourceLocation msgTypeId, boolean viaRadio, String senderName) {
         final IVoiceMessageType type = VocalizedRegistry.INSTANCE.getVoiceMessageTypeOrDefault(
                 msgTypeId,
                 viaRadio ? BuiltInVoiceMessageType.RADIO.get() : BuiltInVoiceMessageType.COMMON.get()
         );
         final ResourceLocation sound = type.getMessageSound();
         if (sound == null) return;
-        _playSoundInWorld(sound, msgId, 1.0F, 1.0F, Minecraft.getInstance().player, senderName);
+        _playSoundInWorld(sound, voiceId, msgId, 1.0F, 1.0F, Minecraft.getInstance().player, senderName);
     }
 
     private static boolean _playVoiceSoundInWorld(
@@ -70,20 +70,20 @@ public class VocalizedClientManager {
         Optional<ResourceLocation> targetSound = actualType.getVoice(msg);
         if (targetSound.isPresent()) {
             if (played.containsValue(targetSound.get())) return false;
-            _playSoundInWorld(targetSound.get(), msgId, actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner, senderName);
+            _playSoundInWorld(targetSound.get(), voiceId, msgId, actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner, senderName);
             return true;
         } else if (!useDefault && !defaultVoiceId.equals(voiceId)) {
             actualType = VocalizedRegistry.INSTANCE.getVoiceType(defaultVoiceId);
             targetSound = actualType.getVoice(msg);
             if (targetSound.isEmpty()) return false;
             if (played.containsValue(targetSound.get())) return false;
-            _playSoundInWorld(targetSound.get(), msgId, actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner, senderName);
+            _playSoundInWorld(targetSound.get(), voiceId, msgId, actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner, senderName);
             return true;
         }
         return false;
     }
 
-    private static void _playSoundInWorld(ResourceLocation sound, ResourceLocation msg, float volume, float pitch, Entity voiceOwner, String senderName) {
+    private static void _playSoundInWorld(ResourceLocation sound, ResourceLocation voiceId, ResourceLocation msgId, float volume, float pitch, Entity voiceOwner, String senderName) {
         if (voiceOwner == null) return;
         final Minecraft mc = Minecraft.getInstance();
         final EntityBoundSoundInstance instance = new EntityBoundSoundInstance(
@@ -92,7 +92,7 @@ public class VocalizedClientManager {
         );
         mc.getSoundManager().play(instance);
         played.put(instance, sound);
-        ClientUtilities.getVoiceMessageText(sound, msg).ifPresent(c -> mc.gui.getChat().addMessage(Component.translatable(
+        ClientUtilities.getVoiceMessageText(sound, voiceId, msgId).ifPresent(c -> mc.gui.getChat().addMessage(Component.translatable(
                 "chat.type.text",
                 senderName,
                 c

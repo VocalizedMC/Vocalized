@@ -2,14 +2,17 @@ package committee.nova.vocalized.common.voice;
 
 import committee.nova.vocalized.api.IVoiceMessage;
 import committee.nova.vocalized.api.IVoiceMessageType;
+import committee.nova.vocalized.api.IVoiceType;
 import committee.nova.vocalized.common.ref.BuiltInVoiceMessageType;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.Optional;
 
 public class VoiceMessage implements IVoiceMessage {
     private final ResourceLocation id;
     private final IVoiceMessageType messageType;
-    private Component name;
 
     private VoiceMessage(ResourceLocation id, IVoiceMessageType messageType) {
         this.id = id;
@@ -22,13 +25,22 @@ public class VoiceMessage implements IVoiceMessage {
     }
 
     @Override
-    public Component getName() {
-        if (name == null) name = Component.translatable(String.format(
-                "vocalized.voice_msg.%s.%s",
+    public Optional<Component> getText(IVoiceType type) {
+        String key = String.format(
+                "v_msg.%s.%s.%s.%s",
+                type.getIdentifier().getNamespace(),
+                type.getIdentifier().getPath(),
                 getId().getNamespace(),
                 getId().getPath()
-        ));
-        return name;
+        );
+        if (I18n.exists(key)) return Optional.of(Component.translatable(key));
+        key = String.format(
+                "v_msg.default.%s.%s",
+                getId().getNamespace(),
+                getId().getPath()
+        );
+        if (I18n.exists(key)) return Optional.of(Component.translatable(key));
+        return Optional.empty();
     }
 
     @Override

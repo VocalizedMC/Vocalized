@@ -3,10 +3,12 @@ package committee.nova.vocalized.api;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Optional;
+
 public interface IVoiceMessage {
     ResourceLocation getId();
 
-    Component getName();
+    Optional<Component> getText(IVoiceType type);
 
     IVoiceMessageType getType();
 

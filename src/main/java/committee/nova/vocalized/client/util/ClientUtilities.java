@@ -1,5 +1,8 @@
 package committee.nova.vocalized.client.util;
 
+import committee.nova.vocalized.api.IVoiceMessage;
+import committee.nova.vocalized.api.IVoiceType;
+import committee.nova.vocalized.common.registry.VocalizedRegistry;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -19,10 +22,21 @@ public class ClientUtilities {
         );
     }
 
-    public static Optional<Component> getVoiceMessageText(ResourceLocation voice, ResourceLocation msg, Object... arg) {
-        String key = "msg.voice_message." + voice.toString().replace(':', '.');
+    public static Optional<Component> getVoiceMessageText(
+            ResourceLocation voice,
+            ResourceLocation voiceType,
+            ResourceLocation msg,
+            Object... arg
+    ) {
+        final IVoiceType t = VocalizedRegistry.INSTANCE.getVoiceType(voiceType);
+        final IVoiceMessage m = VocalizedRegistry.INSTANCE.getVoiceMessage(msg);
+        if (t != null && m != null) {
+            final Optional<Component> c = m.getText(t);
+            if (c.isPresent()) return c;
+        }
+        String key = "v_msg." + voice.toString().replace(':', '.');
         if (!I18n.exists(key)) {
-            key = "msg.voice_message.default." + msg.toString().replace(':', '.');
+            key = "v_msg.default." + msg.toString().replace(':', '.');
             if (!I18n.exists(key)) return Optional.empty();
         }
         return Optional.of(Component.translatable(key, arg));
