@@ -8,6 +8,7 @@ import committee.nova.vocalized.client.util.ClientUtilities;
 import committee.nova.vocalized.common.network.handler.NetworkHandler;
 import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChangedMsg;
 import committee.nova.vocalized.common.ref.BuiltInVoiceMessage;
+import committee.nova.vocalized.common.ref.BuiltInVoiceType;
 import committee.nova.vocalized.common.registry.VocalizedRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
@@ -17,6 +18,7 @@ import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.chat.Component;
@@ -45,7 +47,10 @@ public class ClientConfigScreen extends Screen {
     private OptionsList optionsRowList;
     public Button playBio;
     public Button quit;
-    private final OptionInstance<IVoiceType> voiceType = new OptionInstance<>("screen.vocalized.cfg.selection.voice_type", v -> Tooltip.create(Component.translatable(v.getKey() + ".desc")),
+    private final OptionInstance<IVoiceType> voiceType = new OptionInstance<>("screen.vocalized.cfg.selection.voice_type", v -> {
+        final String key = v.getKey() + ".desc";
+        return I18n.exists(key) ? Tooltip.create(Component.translatable(v.getKey() + ".desc")) : null;
+    },
             OptionInstance.forOptionEnum(), new OptionInstance.Enum<>(VocalizedRegistry.INSTANCE.getVoiceTypes().values().stream().toList(),
             Codec.STRING.xmap(s -> VocalizedRegistry.INSTANCE.getVoiceType(ResourceLocation.tryParse(s)), v -> v.getIdentifier().toString())), ClientConfig.getVoiceType(), r -> {
         interruptBio();
@@ -67,7 +72,7 @@ public class ClientConfigScreen extends Screen {
         if (playing == null) return;
         ClientUtilities.getVoiceMessageText(playing.getLocation(), BuiltInVoiceMessage.BIO.get().getId(), voiceType.get().getName())
                 .ifPresent(c -> {
-                    final List<FormattedCharSequence> seq = font.split(c, 200);
+                    final List<FormattedCharSequence> seq = font.split(c, 150);
                     for (int l = 0; l < seq.size(); ++l) {
                         FormattedCharSequence formattedcharsequence = seq.get(l);
                         g.drawCenteredString(this.font, formattedcharsequence, width / 2, BIO_TEXT_TOP_HEIGHT + l * 9, 0xFFFFFF);
@@ -118,6 +123,10 @@ public class ClientConfigScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
+        if (voiceType.get().equals(BuiltInVoiceType.MUTE.get())) {
+            playBio.active = false;
+            return;
+        }
         if (playing == null) {
             playBio.active = true;
             return;

@@ -5,6 +5,8 @@
   "screen.vocalized.cfg.title": "Vocalized 配置",
   "vocalized.voice_type.vocalized.matthew": "马修[内置]",
   "vocalized.voice_type.vocalized.matthew.desc": "男声，英语（美国）",
+  "vocalized.voice_type.vocalized.mute": "静音",
+  "vocalized.voice_type.vocalized.mute.desc": "已静音，您将不会发出任何语音消息。",
   "vocalized.voice_type.vocalized.salli": "萨莉[内置]",
   "vocalized.voice_type.vocalized.salli.desc": "女声，英语（美国）",
   "vocalized.voice_type.vocalized.zhi_yu": "知语[内置]",

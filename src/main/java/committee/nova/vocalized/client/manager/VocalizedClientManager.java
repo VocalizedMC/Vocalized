@@ -72,7 +72,7 @@ public class VocalizedClientManager {
             if (played.containsValue(targetSound.get())) return false;
             _playSoundInWorld(targetSound.get(), msgId, actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner, senderName);
             return true;
-        } else if (!useDefault) {
+        } else if (!useDefault && !defaultVoiceId.equals(voiceId)) {
             actualType = VocalizedRegistry.INSTANCE.getVoiceType(defaultVoiceId);
             targetSound = actualType.getVoice(msg);
             if (targetSound.isEmpty()) return false;

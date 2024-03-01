@@ -1,5 +1,6 @@
 package committee.nova.vocalized.common.voice;
 
+import committee.nova.vocalized.Vocalized;
 import committee.nova.vocalized.api.IVoiceMessage;
 import committee.nova.vocalized.api.IVoiceType;
 import committee.nova.vocalized.common.ref.BuiltInVoiceType;
@@ -67,4 +68,16 @@ public class VoiceType implements IVoiceType {
         if (keyCache == null) keyCache = "vocalized.voice_type." + getIdentifier().toString().replace(':', '.');
         return keyCache;
     }
+
+    public static final IVoiceType MUTE = new VoiceType(new ResourceLocation(Vocalized.MODID, "mute")) {
+        @Override
+        public Optional<ResourceLocation> getVoice(IVoiceMessage msg) {
+            return Optional.empty();
+        }
+
+        @Override
+        public IVoiceType getDefaultVoiceType() {
+            return this;
+        }
+    };
 }
