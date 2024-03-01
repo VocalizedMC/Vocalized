@@ -49,7 +49,7 @@ public class VoiceType implements IVoiceType {
                         msg.getId().getPath()
                 )
         );
-        // e.g.: vocalized:builtin_male.vocalized.bio
+        // e.g.: vocalized:matthew.vocalized.bio
         final Optional<ResourceLocation> ret = Minecraft.getInstance().getSoundManager().getSoundEvent(targetRl) != null ?
                 Optional.of(targetRl) :
                 Optional.empty();
@@ -59,7 +59,7 @@ public class VoiceType implements IVoiceType {
 
     @Override
     public IVoiceType getDefaultVoiceType() {
-        return BuiltInVoiceType.BUILTIN_FEMALE.get();
+        return BuiltInVoiceType.SALLI.get();
     }
 
     @Override

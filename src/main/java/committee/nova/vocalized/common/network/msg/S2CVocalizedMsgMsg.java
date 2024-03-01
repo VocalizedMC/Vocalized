@@ -17,6 +17,7 @@ public class S2CVocalizedMsgMsg {
     private final ResourceLocation defaultVoiceId;
     private final ResourceLocation messageId;
     private final ResourceLocation messageTypeId;
+    private final String senderName;
     private final VoiceEffect voiceEffect;
     private final ResourceKey<Level> dimension;
     private final int entityId;
@@ -27,6 +28,7 @@ public class S2CVocalizedMsgMsg {
         this.defaultVoiceId = buf.readResourceLocation();
         this.messageId = buf.readResourceLocation();
         this.messageTypeId = buf.readResourceLocation();
+        this.senderName = buf.readUtf();
         this.voiceEffect = VoiceEffect.getByOrdinal(buf.readByte());
         this.dimension = !voiceEffect.overDimension() ? buf.readResourceKey(Registries.DIMENSION) : null;
         this.entityId = !voiceEffect.overDimension() ? buf.readInt() : -1;
@@ -35,28 +37,35 @@ public class S2CVocalizedMsgMsg {
     public S2CVocalizedMsgMsg(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation messageId, ResourceLocation messageTypeId,
+            String senderName,
             VoiceEffect voiceEffect
     ) {
-        this(voiceId, defaultVoiceId, messageId, messageTypeId, voiceEffect, null, -1);
+        this(voiceId, defaultVoiceId, messageId, messageTypeId, senderName, voiceEffect, null, -1);
     }
 
     public S2CVocalizedMsgMsg(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation messageId, ResourceLocation messageTypeId,
+            String senderName,
             VoiceEffect voiceEffect, Entity entity
     ) {
-        this(voiceId, defaultVoiceId, messageId, messageTypeId, voiceEffect, entity.level().dimension(), entity.getId());
+        this(voiceId, defaultVoiceId,
+                messageId, messageTypeId,
+                senderName,
+                voiceEffect, entity.level().dimension(), entity.getId());
     }
 
     private S2CVocalizedMsgMsg(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation messageId, ResourceLocation messageTypeId,
+            String senderName,
             VoiceEffect voiceEffect, ResourceKey<Level> dimension, int entityId
     ) {
         this.voiceId = voiceId;
         this.defaultVoiceId = defaultVoiceId;
         this.messageId = messageId;
         this.messageTypeId = messageTypeId;
+        this.senderName = senderName;
         this.voiceEffect = voiceEffect;
         this.dimension = dimension;
         this.entityId = entityId;
@@ -67,6 +76,7 @@ public class S2CVocalizedMsgMsg {
         buf.writeResourceLocation(defaultVoiceId);
         buf.writeResourceLocation(messageId);
         buf.writeResourceLocation(messageTypeId);
+        buf.writeUtf(senderName);
         buf.writeByte(voiceEffect.ordinal());
         if (!voiceEffect.isRadio()) {
             buf.writeResourceKey(dimension);
@@ -79,6 +89,7 @@ public class S2CVocalizedMsgMsg {
         ctx.enqueueWork(() -> VocalizedClientManager.onReceivedVoiceMsg(
                 voiceId, defaultVoiceId,
                 messageId, messageTypeId,
+                senderName,
                 voiceEffect, voiceEffect.isRadio(), entityId
         ));
         ctx.setPacketHandled(true);

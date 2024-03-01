@@ -1,0 +1,12 @@
+{
+  "msg.voice_message.default.vocalized.bio": "正在播放“%s”的自述语音。",
+  "screen.vocalized.button.play_bio": "播放自述语音",
+  "screen.vocalized.cfg.selection.voice_type": "语音类型",
+  "screen.vocalized.cfg.title": "Vocalized 配置",
+  "vocalized.voice_type.vocalized.matthew": "马修[内置]",
+  "vocalized.voice_type.vocalized.matthew.desc": "男声，英语（美国）",
+  "vocalized.voice_type.vocalized.salli": "萨莉[内置]",
+  "vocalized.voice_type.vocalized.salli.desc": "女声，英语（美国）",
+  "vocalized.voice_type.vocalized.zhi_yu": "知语[内置]",
+  "vocalized.voice_type.vocalized.zhi_yu.desc": "女声，中文（普通话）"
+}

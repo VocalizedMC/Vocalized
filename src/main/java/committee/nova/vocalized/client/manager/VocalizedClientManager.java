@@ -3,18 +3,18 @@ package committee.nova.vocalized.client.manager;
 import committee.nova.vocalized.api.IVoiceMessage;
 import committee.nova.vocalized.api.IVoiceMessageType;
 import committee.nova.vocalized.api.IVoiceType;
+import committee.nova.vocalized.client.util.ClientUtilities;
 import committee.nova.vocalized.common.ref.BuiltInVoiceMessageType;
 import committee.nova.vocalized.common.ref.BuiltInVoiceType;
 import committee.nova.vocalized.common.registry.VocalizedRegistry;
 import committee.nova.vocalized.common.voice.VoiceEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
@@ -24,12 +24,12 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class VocalizedClientManager {
-    private static long lastPlayedTime = -1;
     private static final ConcurrentMap<SoundInstance, ResourceLocation> played = new ConcurrentHashMap<>();
 
     public static void onReceivedVoiceMsg(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
+            String senderName,
             VoiceEffect voiceOffset, boolean isSelf, int entityId
     ) {
         final Entity voiceOwner;
@@ -41,69 +41,64 @@ public class VocalizedClientManager {
             voiceOwner = level.getEntity(entityId);
         }
         if (voiceOwner == null) return;
-        if (_playVoiceSoundInWorld(voiceId, defaultVoiceId, msgId, voiceOwner)) {
-            //lastPlayedTime = currentTime;
-            return;
-        }
-        _playNotificationSoundInWorld(msgTypeId, voiceOffset.isRadio());
+        if (_playVoiceSoundInWorld(voiceId, defaultVoiceId, msgId, voiceOwner, senderName)) return;
+        _playNotificationSoundInWorld(msgId, msgTypeId, voiceOffset.isRadio(), senderName);
     }
 
-    private static void _playNotificationSoundInWorld(ResourceLocation msgTypeId, boolean viaRadio) {
+    private static void _playNotificationSoundInWorld(ResourceLocation msgId, ResourceLocation msgTypeId, boolean viaRadio, String senderName) {
         final IVoiceMessageType type = VocalizedRegistry.INSTANCE.getVoiceMessageTypeOrDefault(
                 msgTypeId,
                 viaRadio ? BuiltInVoiceMessageType.RADIO.get() : BuiltInVoiceMessageType.COMMON.get()
         );
         final ResourceLocation sound = type.getMessageSound();
         if (sound == null) return;
-        _playSoundInWorld(sound, 1.0F, 1.0F, Minecraft.getInstance().player);
+        _playSoundInWorld(sound, msgId, 1.0F, 1.0F, Minecraft.getInstance().player, senderName);
     }
 
     private static boolean _playVoiceSoundInWorld(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
-            ResourceLocation msgId, Entity voiceOwner
+            ResourceLocation msgId, Entity voiceOwner, String senderName
     ) {
         final IVoiceMessage msg = VocalizedRegistry.INSTANCE.getVoiceMessage(msgId);
         if (msg == null) return false;
         final IVoiceType targetType = VocalizedRegistry.INSTANCE.getVoiceType(voiceId);
         boolean useDefault = targetType == null;
         IVoiceType actualType = useDefault ?
-                VocalizedRegistry.INSTANCE.getVoiceTypeOrDefault(defaultVoiceId, BuiltInVoiceType.BUILTIN_FEMALE.get()) :
+                VocalizedRegistry.INSTANCE.getVoiceTypeOrDefault(defaultVoiceId, BuiltInVoiceType.SALLI.get()) :
                 targetType;
         if (actualType == null) return false;
         Optional<ResourceLocation> targetSound = actualType.getVoice(msg);
         if (targetSound.isPresent()) {
             if (played.containsValue(targetSound.get())) return false;
-            _playSoundInWorld(targetSound.get(), actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner);
+            _playSoundInWorld(targetSound.get(), msgId, actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner, senderName);
             return true;
         } else if (!useDefault) {
             actualType = VocalizedRegistry.INSTANCE.getVoiceType(defaultVoiceId);
             targetSound = actualType.getVoice(msg);
             if (targetSound.isEmpty()) return false;
             if (played.containsValue(targetSound.get())) return false;
-            _playSoundInWorld(targetSound.get(), actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner);
+            _playSoundInWorld(targetSound.get(), msgId, actualType.getVolume(msg), actualType.getPitch(msg), voiceOwner, senderName);
             return true;
         }
         return false;
     }
 
-    private static void _playSoundInWorld(ResourceLocation sound, float volume, float pitch, Entity voiceOwner) {
+    private static void _playSoundInWorld(ResourceLocation sound, ResourceLocation msg, float volume, float pitch, Entity voiceOwner, String senderName) {
         if (voiceOwner == null) return;
-        final Minecraft minecraft = Minecraft.getInstance();
+        final Minecraft mc = Minecraft.getInstance();
         final EntityBoundSoundInstance instance = new EntityBoundSoundInstance(
                 SoundEvent.createVariableRangeEvent(sound), SoundSource.PLAYERS, volume, pitch,
                 voiceOwner, ThreadLocalRandom.current().nextLong()
         );
-        minecraft.getSoundManager().play(instance);
+        mc.getSoundManager().play(instance);
         played.put(instance, sound);
+        ClientUtilities.getVoiceMessageText(sound, msg).ifPresent(c -> mc.gui.getChat().addMessage(Component.translatable(
+                "chat.type.text",
+                senderName,
+                c
+        )));
     }
 
-    public static SimpleSoundInstance getUISound(ResourceLocation sound, float volume, float pitch) {
-        return new SimpleSoundInstance(
-                sound, SoundSource.MASTER, volume, pitch,
-                RandomSource.create(), false, 0, SoundInstance.Attenuation.NONE,
-                0.0D, 0.0D, 0.0D, true
-        );
-    }
 
     public static void tick() {
         for (final SoundInstance instance : played.keySet())

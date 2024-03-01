@@ -23,18 +23,26 @@
       }
     ]
   },
-  "builtin_female.vocalized.bio": {
+  "matthew.vocalized.bio": {
     "sounds": [
       {
-        "name": "vocalized:builtin_female/bio",
+        "name": "vocalized:matthew/bio",
         "stream": true
       }
     ]
   },
-  "builtin_male.vocalized.bio": {
+  "salli.vocalized.bio": {
     "sounds": [
       {
-        "name": "vocalized:builtin_male/bio",
+        "name": "vocalized:salli/bio",
+        "stream": true
+      }
+    ]
+  },
+  "zhi_yu.vocalized.bio": {
+    "sounds": [
+      {
+        "name": "vocalized:zhi_yu/bio",
         "stream": true
       }
     ]

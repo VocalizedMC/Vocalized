@@ -14,9 +14,9 @@ public class VocalizedServerManager {
         final S2CVocalizedMsgMsg p = context.getEffect().overDimension() ?
                 new S2CVocalizedMsgMsg(
                         vocal.vocalized$getVoiceId(), vocal.vocalized$getDefaultVoiceId(),
-                        msg.getId(), msg.getType().getId(), context.getEffect()) :
+                        msg.getId(), msg.getType().getId(), player.getName().getString(), context.getEffect()) :
                 new S2CVocalizedMsgMsg(vocal.vocalized$getVoiceId(), vocal.vocalized$getDefaultVoiceId(),
-                        msg.getId(), msg.getType().getId(), context.getEffect(), player);
+                        msg.getId(), msg.getType().getId(), player.getName().getString(), context.getEffect(), player);
         for (final PacketDistributor.PacketTarget target : context.getTarget().determine(player)) {
             NetworkHandler.getInstance().channel.send(target, p);
         }

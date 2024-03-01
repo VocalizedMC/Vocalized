@@ -18,7 +18,7 @@ public class ClientConfig {
         builder.push("VoiceSettings");
         _voiceType = builder
                 .comment("The voice type you use for various voice messages.")
-                .define("voiceType", BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier().toString());
+                .define("voiceType", BuiltInVoiceType.SALLI.get().getIdentifier().toString());
         builder.pop();
         CFG = builder.build();
     }
@@ -26,7 +26,7 @@ public class ClientConfig {
     public static IVoiceType getVoiceType() {
         return VocalizedRegistry.INSTANCE.getVoiceTypeOrDefault(
                 ResourceLocation.tryParse(_voiceType.get()),
-                BuiltInVoiceType.BUILTIN_FEMALE.get()
+                BuiltInVoiceType.SALLI.get()
         );
     }
 }

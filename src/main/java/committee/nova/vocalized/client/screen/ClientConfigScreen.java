@@ -4,9 +4,12 @@ import com.mojang.serialization.Codec;
 import committee.nova.vocalized.api.IVoiceMessage;
 import committee.nova.vocalized.api.IVoiceType;
 import committee.nova.vocalized.client.config.ClientConfig;
-import committee.nova.vocalized.client.manager.VocalizedClientManager;
+import committee.nova.vocalized.client.util.ClientUtilities;
+import committee.nova.vocalized.common.network.handler.NetworkHandler;
+import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChangedMsg;
 import committee.nova.vocalized.common.ref.BuiltInVoiceMessage;
 import committee.nova.vocalized.common.registry.VocalizedRegistry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -18,9 +21,12 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 import java.util.function.Supplier;
 
 @ParametersAreNonnullByDefault
@@ -35,6 +41,7 @@ public class ClientConfigScreen extends Screen {
     private static final int BUTTON_HEIGHT = 20;
     private static final int DONE_BUTTON_TOP_OFFSET = 26;
     private static final int PLAY_BUTTON_TOP_HEIGHT = OPTIONS_LIST_ITEM_HEIGHT + 27;
+    private static final int BIO_TEXT_TOP_HEIGHT = PLAY_BUTTON_TOP_HEIGHT + 22;
     private OptionsList optionsRowList;
     public Button playBio;
     public Button quit;
@@ -43,7 +50,7 @@ public class ClientConfigScreen extends Screen {
             Codec.STRING.xmap(s -> VocalizedRegistry.INSTANCE.getVoiceType(ResourceLocation.tryParse(s)), v -> v.getIdentifier().toString())), ClientConfig.getVoiceType(), r -> {
         interruptBio();
         ClientConfig._voiceType.set(r.getIdentifier().toString());
-        ClientConfig.CFG.save();
+        save();
     });
 
     public ClientConfigScreen(Screen parent) {
@@ -57,6 +64,15 @@ public class ClientConfigScreen extends Screen {
         optionsRowList.render(g, mouseX, mouseY, partialTicks);
         g.drawCenteredString(font, title, width / 2, titleOffset, 0xFFFFFF);
         super.render(g, mouseX, mouseY, partialTicks);
+        if (playing == null) return;
+        ClientUtilities.getVoiceMessageText(playing.getLocation(), BuiltInVoiceMessage.BIO.get().getId(), voiceType.get().getName())
+                .ifPresent(c -> {
+                    final List<FormattedCharSequence> seq = font.split(c, 200);
+                    for (int l = 0; l < seq.size(); ++l) {
+                        FormattedCharSequence formattedcharsequence = seq.get(l);
+                        g.drawCenteredString(this.font, formattedcharsequence, width / 2, BIO_TEXT_TOP_HEIGHT + l * 9, 0xFFFFFF);
+                    }
+                });
     }
 
     @Override
@@ -75,7 +91,7 @@ public class ClientConfigScreen extends Screen {
                     final IVoiceType voice = ClientConfig.getVoiceType();
                     final IVoiceMessage bio = BuiltInVoiceMessage.BIO.get();
                     voice.getVoice(bio).ifPresent(s -> {
-                        final SimpleSoundInstance sound = VocalizedClientManager.getUISound(s, voice.getVolume(bio), voice.getPitch(bio));
+                        final SimpleSoundInstance sound = ClientUtilities.getUISound(s, voice.getVolume(bio), voice.getPitch(bio));
                         this.playing = sound;
                         getMinecraft().getSoundManager().play(sound);
                         b.active = false;
@@ -88,7 +104,7 @@ public class ClientConfigScreen extends Screen {
         );
         quit = addRenderableWidget(Button
                 .builder(Component.translatable("gui.done"), b -> {
-                    ClientConfig.CFG.save();
+                    save();
                     getMinecraft().setScreen(parent);
                 })
                 .bounds((width - BUTTON_WIDTH) / 2,
@@ -115,12 +131,11 @@ public class ClientConfigScreen extends Screen {
     @Override
     public void removed() {
         interruptBio();
-        ClientConfig.CFG.save();
+        save();
     }
 
     @Override
     public void onClose() {
-        interruptBio();
         getMinecraft().setScreen(parent instanceof PauseScreen ? null : parent);
     }
 
@@ -129,6 +144,15 @@ public class ClientConfigScreen extends Screen {
             getMinecraft().getSoundManager().stop(playing);
             playing = null;
         }
+    }
+
+    private void save() {
+        ClientConfig.CFG.save();
+        if (Minecraft.getInstance().getConnection() == null) return;
+        NetworkHandler.getInstance().channel.send(PacketDistributor.SERVER.noArg(), new C2SVocalizedVoiceChangedMsg(
+                ClientConfig.getVoiceType().getIdentifier(),
+                ClientConfig.getVoiceType().getDefaultVoiceType().getIdentifier()
+        ));
     }
 
     public static Supplier<ConfigScreenHandler.ConfigScreenFactory> getFactory() {

@@ -9,8 +9,9 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 public enum BuiltInVoiceType implements Supplier<VoiceType> {
-    BUILTIN_FEMALE,
-    BUILTIN_MALE;
+    MATTHEW,
+    SALLI,
+    ZHI_YU;
 
     BuiltInVoiceType() {
         final VoiceType type = new VoiceType(new ResourceLocation(Vocalized.MODID, this.name().toLowerCase(Locale.ROOT)));

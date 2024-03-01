@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer implements IVocal {
     @Unique
-    private ResourceLocation vocalized$voiceId = BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier();
+    private ResourceLocation vocalized$voiceId = BuiltInVoiceType.SALLI.get().getIdentifier();
     @Unique
-    private ResourceLocation vocalized$defaultVoiceId = BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier();
+    private ResourceLocation vocalized$defaultVoiceId = BuiltInVoiceType.SALLI.get().getIdentifier();
 
     @Override
     public ResourceLocation vocalized$getVoiceId() {
@@ -53,9 +53,9 @@ public abstract class MixinServerPlayer implements IVocal {
         if (tag.contains("voice")) vocalized$voiceId = ResourceLocation.tryParse(tag.getString("voice"));
         if (tag.contains("default_voice"))
             vocalized$defaultVoiceId = ResourceLocation.tryParse(tag.getString("default_voice"));
-        if (vocalized$voiceId == null) vocalized$voiceId = BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier();
+        if (vocalized$voiceId == null) vocalized$voiceId = BuiltInVoiceType.SALLI.get().getIdentifier();
         if (vocalized$defaultVoiceId == null)
-            vocalized$defaultVoiceId = BuiltInVoiceType.BUILTIN_FEMALE.get().getIdentifier();
+            vocalized$defaultVoiceId = BuiltInVoiceType.SALLI.get().getIdentifier();
     }
 
     @Inject(method = "restoreFrom", at = @At("TAIL"))
