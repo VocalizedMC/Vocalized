@@ -34,9 +34,9 @@ public class ClientUtilities {
             final Optional<Component> c = m.getText(t, arg);
             if (c.isPresent()) return c;
         }
-        String key = "v_msg." + vMsg.toString().replace(':', '.');
+        String key = "v_msg.vocalized." + vMsg.toString().replace(':', '.');
         if (!I18n.exists(key)) {
-            key = "v_msg.default." + msgId.toString().replace(':', '.');
+            key = "v_msg.vocalized.default." + msgId.toString().replace(':', '.');
             if (!I18n.exists(key)) return Optional.empty();
         }
         return Optional.of(Component.translatable(key, arg));

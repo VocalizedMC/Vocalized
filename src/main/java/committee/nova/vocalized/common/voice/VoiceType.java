@@ -65,7 +65,7 @@ public class VoiceType implements IVoiceType {
 
     @Override
     public String getKey() {
-        if (keyCache == null) keyCache = "vocalized.voice_type." + getIdentifier().toString().replace(':', '.');
+        if (keyCache == null) keyCache = "v_type.vocalized." + getIdentifier().toString().replace(':', '.');
         return keyCache;
     }
 
