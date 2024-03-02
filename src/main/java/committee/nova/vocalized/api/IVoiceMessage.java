@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface IVoiceMessage {
     ResourceLocation getId();
 
-    Optional<Component> getText(IVoiceType type);
+    Optional<Component> getText(IVoiceType type, Object... arg);
 
     IVoiceMessageType getType();
 

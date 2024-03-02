@@ -23,20 +23,20 @@ public class ClientUtilities {
     }
 
     public static Optional<Component> getVoiceMessageText(
-            ResourceLocation voice,
-            ResourceLocation voiceType,
-            ResourceLocation msg,
+            ResourceLocation vMsg,
+            ResourceLocation voiceId,
+            ResourceLocation msgId,
             Object... arg
     ) {
-        final IVoiceType t = VocalizedRegistry.INSTANCE.getVoiceType(voiceType);
-        final IVoiceMessage m = VocalizedRegistry.INSTANCE.getVoiceMessage(msg);
+        final IVoiceType t = VocalizedRegistry.INSTANCE.getVoiceType(voiceId);
+        final IVoiceMessage m = VocalizedRegistry.INSTANCE.getVoiceMessage(msgId);
         if (t != null && m != null) {
             final Optional<Component> c = m.getText(t);
             if (c.isPresent()) return c;
         }
-        String key = "v_msg." + voice.toString().replace(':', '.');
+        String key = "v_msg." + vMsg.toString().replace(':', '.');
         if (!I18n.exists(key)) {
-            key = "v_msg.default." + msg.toString().replace(':', '.');
+            key = "v_msg.default." + msgId.toString().replace(':', '.');
             if (!I18n.exists(key)) return Optional.empty();
         }
         return Optional.of(Component.translatable(key, arg));

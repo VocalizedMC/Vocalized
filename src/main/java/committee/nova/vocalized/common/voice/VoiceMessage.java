@@ -25,7 +25,7 @@ public class VoiceMessage implements IVoiceMessage {
     }
 
     @Override
-    public Optional<Component> getText(IVoiceType type) {
+    public Optional<Component> getText(IVoiceType type, Object... arg) {
         String key = String.format(
                 "v_msg.%s.%s.%s.%s",
                 type.getIdentifier().getNamespace(),
@@ -33,13 +33,13 @@ public class VoiceMessage implements IVoiceMessage {
                 getId().getNamespace(),
                 getId().getPath()
         );
-        if (I18n.exists(key)) return Optional.of(Component.translatable(key));
+        if (I18n.exists(key)) return Optional.of(Component.translatable(key, arg));
         key = String.format(
                 "v_msg.default.%s.%s",
                 getId().getNamespace(),
                 getId().getPath()
         );
-        if (I18n.exists(key)) return Optional.of(Component.translatable(key));
+        if (I18n.exists(key)) return Optional.of(Component.translatable(key, arg));
         return Optional.empty();
     }
 
