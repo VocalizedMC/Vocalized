@@ -31,7 +31,7 @@ public class ClientUtilities {
         final IVoiceType t = VocalizedRegistry.INSTANCE.getVoiceType(voiceId);
         final IVoiceMessage m = VocalizedRegistry.INSTANCE.getVoiceMessage(msgId);
         if (t != null && m != null) {
-            final Optional<Component> c = m.getText(t);
+            final Optional<Component> c = m.getText(t, arg);
             if (c.isPresent()) return c;
         }
         String key = "v_msg." + vMsg.toString().replace(':', '.');

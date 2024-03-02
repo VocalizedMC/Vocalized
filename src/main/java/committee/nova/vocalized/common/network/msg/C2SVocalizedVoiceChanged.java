@@ -8,17 +8,17 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class C2SVocalizedVoiceChangedMsg {
+public class C2SVocalizedVoiceChanged {
     private final ResourceLocation voiceId;
     private final ResourceLocation defaultVoiceId;
 
 
-    public C2SVocalizedVoiceChangedMsg(FriendlyByteBuf buf) {
+    public C2SVocalizedVoiceChanged(FriendlyByteBuf buf) {
         this.voiceId = buf.readResourceLocation();
         this.defaultVoiceId = buf.readResourceLocation();
     }
 
-    public C2SVocalizedVoiceChangedMsg(ResourceLocation voiceId, ResourceLocation defaultVoiceId) {
+    public C2SVocalizedVoiceChanged(ResourceLocation voiceId, ResourceLocation defaultVoiceId) {
         this.voiceId = voiceId;
         this.defaultVoiceId = defaultVoiceId;
     }

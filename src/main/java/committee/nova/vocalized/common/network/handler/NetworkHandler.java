@@ -1,8 +1,9 @@
 package committee.nova.vocalized.common.network.handler;
 
 import committee.nova.vocalized.Vocalized;
-import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChangedMsg;
-import committee.nova.vocalized.common.network.msg.S2CVocalizedMsgMsg;
+import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChanged;
+import committee.nova.vocalized.common.network.msg.S2CVocalizedMsgEntityBound;
+import committee.nova.vocalized.common.network.msg.S2CVocalizedMsgPosBound;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -29,15 +30,20 @@ public class NetworkHandler {
                 NetworkRegistry.ACCEPTVANILLA::equals,
                 NetworkRegistry.ACCEPTVANILLA::equals
         );
-        channel.messageBuilder(S2CVocalizedMsgMsg.class, nextId())
-                .encoder(S2CVocalizedMsgMsg::toBytes)
-                .decoder(S2CVocalizedMsgMsg::new)
-                .consumerMainThread(S2CVocalizedMsgMsg::handler)
+        channel.messageBuilder(C2SVocalizedVoiceChanged.class, nextId())
+                .encoder(C2SVocalizedVoiceChanged::toBytes)
+                .decoder(C2SVocalizedVoiceChanged::new)
+                .consumerMainThread(C2SVocalizedVoiceChanged::handler)
                 .add();
-        channel.messageBuilder(C2SVocalizedVoiceChangedMsg.class, nextId())
-                .encoder(C2SVocalizedVoiceChangedMsg::toBytes)
-                .decoder(C2SVocalizedVoiceChangedMsg::new)
-                .consumerMainThread(C2SVocalizedVoiceChangedMsg::handler)
+        channel.messageBuilder(S2CVocalizedMsgEntityBound.class, nextId())
+                .encoder(S2CVocalizedMsgEntityBound::toBytes)
+                .decoder(S2CVocalizedMsgEntityBound::new)
+                .consumerMainThread(S2CVocalizedMsgEntityBound::handler)
+                .add();
+        channel.messageBuilder(S2CVocalizedMsgPosBound.class, nextId())
+                .encoder(S2CVocalizedMsgPosBound::toBytes)
+                .decoder(S2CVocalizedMsgPosBound::new)
+                .consumerMainThread(S2CVocalizedMsgPosBound::handler)
                 .add();
     }
 }

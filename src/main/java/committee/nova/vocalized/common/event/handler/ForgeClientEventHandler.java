@@ -2,7 +2,7 @@ package committee.nova.vocalized.common.event.handler;
 
 import committee.nova.vocalized.client.config.ClientConfig;
 import committee.nova.vocalized.common.network.handler.NetworkHandler;
-import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChangedMsg;
+import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChanged;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -17,7 +17,7 @@ public class ForgeClientEventHandler {
     public static void onLogin(EntityJoinLevelEvent event) {
         if (!FMLEnvironment.dist.isClient()) return;
         if (!event.getEntity().equals(Minecraft.getInstance().player)) return;
-        NetworkHandler.getInstance().channel.send(PacketDistributor.SERVER.noArg(), new C2SVocalizedVoiceChangedMsg(
+        NetworkHandler.getInstance().channel.send(PacketDistributor.SERVER.noArg(), new C2SVocalizedVoiceChanged(
                 ClientConfig.getVoiceType().getIdentifier(),
                 ClientConfig.getVoiceType().getDefaultVoiceType().getIdentifier()
         ));

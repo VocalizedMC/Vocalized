@@ -1,5 +1,7 @@
 package committee.nova.vocalized.common.voice;
 
+import com.mojang.datafixers.util.Either;
+import committee.nova.vocalized.common.phys.Vec3WithDim;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -28,7 +30,7 @@ public class VoiceContext {
     }
 
     public static class Builder {
-        private TargetDeterminer target = p -> Collections.singletonList(PacketDistributor.ALL.noArg());
+        private TargetDeterminer target = e -> Collections.singletonList(PacketDistributor.ALL.noArg());
         private VoiceEffect offset = VoiceEffect.RADIO;
 
         public Builder target(TargetDeterminer target) {
@@ -47,6 +49,6 @@ public class VoiceContext {
     }
 
     public interface TargetDeterminer {
-        List<PacketDistributor.PacketTarget> determine(ServerPlayer sender);
+        List<PacketDistributor.PacketTarget> determine(Either<ServerPlayer, Vec3WithDim> sender);
     }
 }

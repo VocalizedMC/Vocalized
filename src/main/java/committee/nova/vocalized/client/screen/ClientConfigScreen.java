@@ -6,7 +6,7 @@ import committee.nova.vocalized.api.IVoiceType;
 import committee.nova.vocalized.client.config.ClientConfig;
 import committee.nova.vocalized.client.util.ClientUtilities;
 import committee.nova.vocalized.common.network.handler.NetworkHandler;
-import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChangedMsg;
+import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChanged;
 import committee.nova.vocalized.common.ref.BuiltInVoiceMessage;
 import committee.nova.vocalized.common.ref.BuiltInVoiceType;
 import committee.nova.vocalized.common.registry.VocalizedRegistry;
@@ -158,7 +158,7 @@ public class ClientConfigScreen extends Screen {
     private void save() {
         ClientConfig.CFG.save();
         if (Minecraft.getInstance().getConnection() == null) return;
-        NetworkHandler.getInstance().channel.send(PacketDistributor.SERVER.noArg(), new C2SVocalizedVoiceChangedMsg(
+        NetworkHandler.getInstance().channel.send(PacketDistributor.SERVER.noArg(), new C2SVocalizedVoiceChanged(
                 ClientConfig.getVoiceType().getIdentifier(),
                 ClientConfig.getVoiceType().getDefaultVoiceType().getIdentifier()
         ));
