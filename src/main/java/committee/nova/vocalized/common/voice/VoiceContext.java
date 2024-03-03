@@ -2,7 +2,7 @@ package committee.nova.vocalized.common.voice;
 
 import com.mojang.datafixers.util.Either;
 import committee.nova.vocalized.common.phys.Vec3WithDim;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Collections;
@@ -49,6 +49,6 @@ public class VoiceContext {
     }
 
     public interface TargetDeterminer {
-        List<PacketDistributor.PacketTarget> determine(Either<ServerPlayer, Vec3WithDim> sender);
+        List<PacketDistributor.PacketTarget> determine(Either<Entity, Vec3WithDim> sender);
     }
 }

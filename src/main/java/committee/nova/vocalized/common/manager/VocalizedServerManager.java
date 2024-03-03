@@ -11,13 +11,14 @@ import committee.nova.vocalized.common.voice.VoiceContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 
 public class VocalizedServerManager {
     public static void sendVoiceMsg(ServerPlayer player, IVoiceMessage msg, VoiceContext context) {
-        sendVoiceMsgEntityBound(
+        sendVoiceMsgPlayerBound(
                 player,
                 msg.getId(), msg.getType().getId(),
                 context
@@ -38,19 +39,38 @@ public class VocalizedServerManager {
         );
     }
 
-    public static void sendVoiceMsgEntityBound(
+    public static void sendVoiceMsgPlayerBound(
             ServerPlayer player,
             ResourceLocation msgId, ResourceLocation msgTypeId,
             VoiceContext context
     ) {
         final IVocal vocal = (IVocal) player;
+        sendVoiceMsgEntityBound(
+                player,
+                vocal.vocalized$getVoiceId(), vocal.vocalized$getDefaultVoiceId(),
+                msgId, msgTypeId,
+                context
+        );
+    }
+
+    public static void sendVoiceMsgEntityBound(
+            Entity entity,
+            ResourceLocation voiceId, ResourceLocation defaultVoiceId,
+            ResourceLocation msgId, ResourceLocation msgTypeId,
+            VoiceContext context
+    ) {
         final S2CVocalizedMsgEntityBound p = context.getEffect().overDimension() ?
                 new S2CVocalizedMsgEntityBound(
-                        vocal.vocalized$getVoiceId(), vocal.vocalized$getDefaultVoiceId(),
-                        msgId, msgTypeId, player.getName(), context.getEffect()) :
-                new S2CVocalizedMsgEntityBound(vocal.vocalized$getVoiceId(), vocal.vocalized$getDefaultVoiceId(),
-                        msgId, msgTypeId, player.getName(), context.getEffect(), player);
-        for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.left(player))) {
+                        voiceId, defaultVoiceId,
+                        msgId, msgTypeId,
+                        entity.getName(), context.getEffect()
+                ) :
+                new S2CVocalizedMsgEntityBound(
+                        voiceId, defaultVoiceId,
+                        msgId, msgTypeId,
+                        entity.getName(), context.getEffect(), entity
+                );
+        for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.left(entity))) {
             NetworkHandler.getInstance().channel.send(target, p);
         }
     }
