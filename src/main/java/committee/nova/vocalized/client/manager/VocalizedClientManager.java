@@ -34,26 +34,26 @@ public class VocalizedClientManager {
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
             Component senderName,
-            VoiceEffect voiceOffset, ResourceKey<Level> dimension, int entityId
+            VoiceEffect voiceOffset, ResourceKey<Level> dimension, int entityId, Component... args
     ) {
         onReceivedVoiceMsgEntityBound(
                 voiceId, defaultVoiceId,
                 msgId, msgTypeId,
                 true, senderName,
-                voiceOffset, dimension, entityId
+                voiceOffset, dimension, entityId, args
         );
     }
 
     public static void onReceivedVoiceMsgEntityBound(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
-            VoiceEffect voiceOffset, ResourceKey<Level> dimension, int entityId
+            VoiceEffect voiceOffset, ResourceKey<Level> dimension, int entityId, Component... args
     ) {
         onReceivedVoiceMsgEntityBound(
                 voiceId, defaultVoiceId,
                 msgId, msgTypeId,
                 false, Component.empty(),
-                voiceOffset, dimension, entityId
+                voiceOffset, dimension, entityId, args
         );
     }
 
@@ -61,7 +61,7 @@ public class VocalizedClientManager {
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
             boolean sendText, Component senderName,
-            VoiceEffect voiceOffset, ResourceKey<Level> dimension, int entityId
+            VoiceEffect voiceOffset, ResourceKey<Level> dimension, int entityId, Component... args
     ) {
         final Minecraft mc = Minecraft.getInstance();
         final Entity voiceOwner;
@@ -75,34 +75,35 @@ public class VocalizedClientManager {
             voiceOwner = level.getEntity(entityId);
         }
         if (voiceOwner == null) return;
-        if (_playVoiceSoundInWorldEntityBound(voiceId, defaultVoiceId, msgId, voiceOwner, senderName, sendText)) return;
-        _playNotificationSoundInWorld(voiceId, msgId, msgTypeId, senderName, sendText);
+        if (_playVoiceSoundInWorldEntityBound(voiceId, defaultVoiceId, msgId, voiceOwner, senderName, sendText, args))
+            return;
+        _playNotificationSoundInWorld(voiceId, msgId, msgTypeId, senderName, sendText, args);
     }
 
     public static void onReceivedVoiceMsgPosBound(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
             Component senderName,
-            VoiceEffect voiceOffset, ResourceKey<Level> dimension, Vec3 pos
+            ResourceKey<Level> dimension, Vec3 pos, Component... args
     ) {
         onReceivedVoiceMsgPosBound(
                 voiceId, defaultVoiceId,
                 msgId, msgTypeId,
                 true, senderName,
-                dimension, pos
+                dimension, pos, args
         );
     }
 
     public static void onReceivedVoiceMsgPosBound(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
-            VoiceEffect voiceOffset, ResourceKey<Level> dimension, Vec3 pos
+            ResourceKey<Level> dimension, Vec3 pos, Component... args
     ) {
         onReceivedVoiceMsgPosBound(
                 voiceId, defaultVoiceId,
                 msgId, msgTypeId,
                 false, Component.empty(),
-                dimension, pos
+                dimension, pos, args
         );
     }
 
@@ -110,20 +111,20 @@ public class VocalizedClientManager {
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
             boolean sendText, Component senderName,
-            ResourceKey<Level> dimension, Vec3 pos
+            ResourceKey<Level> dimension, Vec3 pos, Component... args
     ) {
         final Minecraft mc = Minecraft.getInstance();
         final Level level = mc.level;
         if (level == null) return;
         if (!level.dimension().equals(dimension)) return;
-        if (_playVoiceSoundInWorldPosBound(voiceId, defaultVoiceId, msgId, pos, senderName, sendText)) return;
-        _playNotificationSoundInWorld(voiceId, msgId, msgTypeId, senderName, sendText);
+        if (_playVoiceSoundInWorldPosBound(voiceId, defaultVoiceId, msgId, pos, senderName, sendText, args)) return;
+        _playNotificationSoundInWorld(voiceId, msgId, msgTypeId, senderName, sendText, args);
     }
 
     private static void _playNotificationSoundInWorld(
             ResourceLocation voiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
-            Component senderName, boolean sendText
+            Component senderName, boolean sendText, Component... args
     ) {
         final IVoiceMessageType type = VocalizedRegistry.INSTANCE.getVoiceMessageTypeOrDefault(
                 msgTypeId,
@@ -131,12 +132,12 @@ public class VocalizedClientManager {
         );
         final ResourceLocation sound = type.getMessageSound();
         if (sound == null) return;
-        _playSoundInWorldEntityBound(sound, voiceId, msgId, 1.0F, 1.0F, Minecraft.getInstance().player, senderName, sendText);
+        _playSoundInWorldEntityBound(sound, voiceId, msgId, 1.0F, 1.0F, Minecraft.getInstance().player, senderName, sendText, args);
     }
 
     private static boolean _playVoiceSoundInWorldEntityBound(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
-            ResourceLocation msgId, Entity voiceOwner, Component senderName, boolean sendText
+            ResourceLocation msgId, Entity voiceOwner, Component senderName, boolean sendText, Component... args
     ) {
         final IVoiceMessage msg = VocalizedRegistry.INSTANCE.getVoiceMessage(msgId);
         if (msg == null) return false;
@@ -153,7 +154,7 @@ public class VocalizedClientManager {
                     targetSound.get(),
                     voiceId, msgId,
                     actualType.getVolume(msg), actualType.getPitch(msg),
-                    voiceOwner, senderName, sendText);
+                    voiceOwner, senderName, sendText, args);
             return true;
         } else if (!useDefault && !defaultVoiceId.equals(voiceId)) {
             actualType = VocalizedRegistry.INSTANCE.getVoiceType(defaultVoiceId);
@@ -164,7 +165,7 @@ public class VocalizedClientManager {
                     targetSound.get(),
                     voiceId, msgId,
                     actualType.getVolume(msg), actualType.getPitch(msg),
-                    voiceOwner, senderName, sendText
+                    voiceOwner, senderName, sendText, args
             );
             return true;
         }
@@ -173,7 +174,7 @@ public class VocalizedClientManager {
 
     private static boolean _playVoiceSoundInWorldPosBound(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
-            ResourceLocation msgId, Vec3 pos, Component senderName, boolean sendText
+            ResourceLocation msgId, Vec3 pos, Component senderName, boolean sendText, Component... args
     ) {
         final IVoiceMessage msg = VocalizedRegistry.INSTANCE.getVoiceMessage(msgId);
         if (msg == null) return false;
@@ -190,7 +191,7 @@ public class VocalizedClientManager {
                     targetSound.get(),
                     voiceId, msgId,
                     actualType.getVolume(msg), actualType.getPitch(msg),
-                    pos, senderName, sendText
+                    pos, senderName, sendText, args
             );
             return true;
         } else if (!useDefault && !defaultVoiceId.equals(voiceId)) {
@@ -202,14 +203,14 @@ public class VocalizedClientManager {
                     targetSound.get(),
                     voiceId, msgId,
                     actualType.getVolume(msg), actualType.getPitch(msg),
-                    pos, senderName, sendText
+                    pos, senderName, sendText, args
             );
             return true;
         }
         return false;
     }
 
-    private static void _playSoundInWorldEntityBound(ResourceLocation sound, ResourceLocation voiceId, ResourceLocation msgId, float volume, float pitch, Entity voiceOwner, Component senderName, boolean sendText) {
+    private static void _playSoundInWorldEntityBound(ResourceLocation sound, ResourceLocation voiceId, ResourceLocation msgId, float volume, float pitch, Entity voiceOwner, Component senderName, boolean sendText, Component... args) {
         if (voiceOwner == null) return;
         final Minecraft mc = Minecraft.getInstance();
         final EntityBoundSoundInstance instance = new EntityBoundSoundInstance(
@@ -219,7 +220,7 @@ public class VocalizedClientManager {
         mc.getSoundManager().play(instance);
         played.put(instance, sound);
         if (!sendText) return;
-        ClientUtilities.getVoiceMessageText(sound, voiceId, msgId).ifPresent(c -> mc.gui.getChat().addMessage(
+        ClientUtilities.getVoiceMessageText(sound, voiceId, msgId, (Object[]) args).ifPresent(c -> mc.gui.getChat().addMessage(
                 Component.translatable(
                         "chat.type.text",
                         senderName,
@@ -228,7 +229,7 @@ public class VocalizedClientManager {
         ));
     }
 
-    private static void _playSoundInWorldPosBound(ResourceLocation sound, ResourceLocation voiceId, ResourceLocation msgId, float volume, float pitch, Vec3 pos, Component senderName, boolean sendText) {
+    private static void _playSoundInWorldPosBound(ResourceLocation sound, ResourceLocation voiceId, ResourceLocation msgId, float volume, float pitch, Vec3 pos, Component senderName, boolean sendText, Component... args) {
         final Minecraft mc = Minecraft.getInstance();
         final SimpleSoundInstance instance = new SimpleSoundInstance(
                 sound, SoundSource.PLAYERS, volume, pitch, RandomSource.create(), false, 0, SoundInstance.Attenuation.LINEAR, pos.x, pos.y, pos.z, true
@@ -236,7 +237,7 @@ public class VocalizedClientManager {
         mc.getSoundManager().play(instance);
         played.put(instance, sound);
         if (!sendText) return;
-        ClientUtilities.getVoiceMessageText(sound, voiceId, msgId).ifPresent(c -> mc.gui.getChat().addMessage(
+        ClientUtilities.getVoiceMessageText(sound, voiceId, msgId, (Object[]) args).ifPresent(c -> mc.gui.getChat().addMessage(
                 Component.translatable(
                         "chat.type.text",
                         senderName,

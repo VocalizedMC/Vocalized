@@ -1,7 +1,6 @@
 package committee.nova.vocalized.common.network.msg;
 
 import committee.nova.vocalized.client.manager.VocalizedClientManager;
-import committee.nova.vocalized.common.voice.VoiceEffect;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -11,6 +10,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class S2CVocalizedMsgPosBound {
@@ -20,9 +22,9 @@ public class S2CVocalizedMsgPosBound {
     private final ResourceLocation messageTypeId;
     private final boolean sendText;
     private final Component senderName;
-    private final VoiceEffect voiceEffect;
     private final ResourceKey<Level> dimension;
     private final Vec3 pos;
+    private final List<Component> args;
 
 
     public S2CVocalizedMsgPosBound(FriendlyByteBuf buf) {
@@ -32,33 +34,47 @@ public class S2CVocalizedMsgPosBound {
         this.messageTypeId = buf.readResourceLocation();
         this.sendText = buf.readBoolean();
         this.senderName = sendText ? buf.readComponent() : Component.empty();
-        this.voiceEffect = VoiceEffect.getByOrdinal(buf.readByte());
         this.dimension = buf.readResourceKey(Registries.DIMENSION);
         this.pos = new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        final int length = buf.readInt();
+        this.args = new ArrayList<>();
+        for (int i = 0; i < length; i++) args.add(buf.readComponent());
     }
 
     public S2CVocalizedMsgPosBound(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation messageId, ResourceLocation messageTypeId,
             Component senderName,
-            VoiceEffect voiceEffect, ResourceKey<Level> dimension, Vec3 pos
+            ResourceKey<Level> dimension, Vec3 pos, Component... args
     ) {
-        this(voiceId, defaultVoiceId, messageId, messageTypeId, true, senderName, voiceEffect, dimension, pos);
+        this(
+                voiceId, defaultVoiceId,
+                messageId, messageTypeId,
+                true, senderName,
+                dimension, pos,
+                args
+        );
     }
 
     public S2CVocalizedMsgPosBound(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation messageId, ResourceLocation messageTypeId,
-            VoiceEffect voiceEffect, ResourceKey<Level> dimension, Vec3 pos
+            ResourceKey<Level> dimension, Vec3 pos, Component... args
     ) {
-        this(voiceId, defaultVoiceId, messageId, messageTypeId, false, Component.empty(), voiceEffect, dimension, pos);
+        this(
+                voiceId, defaultVoiceId,
+                messageId, messageTypeId,
+                false, Component.empty(),
+                dimension, pos,
+                args
+        );
     }
 
     private S2CVocalizedMsgPosBound(
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation messageId, ResourceLocation messageTypeId,
             boolean sendText, Component senderName,
-            VoiceEffect voiceEffect, ResourceKey<Level> dimension, Vec3 pos
+            ResourceKey<Level> dimension, Vec3 pos, Component... args
     ) {
         this.voiceId = voiceId;
         this.defaultVoiceId = defaultVoiceId;
@@ -66,9 +82,9 @@ public class S2CVocalizedMsgPosBound {
         this.messageTypeId = messageTypeId;
         this.sendText = sendText;
         this.senderName = senderName;
-        this.voiceEffect = voiceEffect;
         this.dimension = dimension;
         this.pos = pos;
+        this.args = Arrays.stream(args).toList();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
@@ -78,11 +94,12 @@ public class S2CVocalizedMsgPosBound {
         buf.writeResourceLocation(messageTypeId);
         buf.writeBoolean(sendText);
         if (sendText) buf.writeComponent(senderName);
-        buf.writeByte(voiceEffect.ordinal());
         buf.writeResourceKey(dimension);
         buf.writeDouble(pos.x);
         buf.writeDouble(pos.y);
         buf.writeDouble(pos.z);
+        buf.writeInt(args.size());
+        for (final Component c : args) buf.writeComponent(c);
     }
 
     public void handler(Supplier<NetworkEvent.Context> sup) {
@@ -92,12 +109,12 @@ public class S2CVocalizedMsgPosBound {
                     voiceId, defaultVoiceId,
                     messageId, messageTypeId,
                     senderName,
-                    voiceEffect, dimension, pos
+                    dimension, pos, args.toArray(Component[]::new)
             );
             else VocalizedClientManager.onReceivedVoiceMsgPosBound(
                     voiceId, defaultVoiceId,
                     messageId, messageTypeId,
-                    voiceEffect, dimension, pos
+                    dimension, pos
             );
         });
         ctx.setPacketHandled(true);

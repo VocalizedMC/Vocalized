@@ -17,11 +17,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 
 public class VocalizedServerManager {
-    public static void sendVoiceMsg(ServerPlayer player, IVoiceMessage msg, VoiceContext context) {
+    public static void sendVoiceMsg(ServerPlayer player, IVoiceMessage msg, VoiceContext context, Component... args) {
         sendVoiceMsgPlayerBound(
                 player,
                 msg.getId(), msg.getType().getId(),
-                context
+                context, args
         );
     }
 
@@ -36,14 +36,14 @@ public class VocalizedServerManager {
     public static void sendVoiceMsg(
             Level level, Vec3 pos, Component senderName,
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
-            IVoiceMessage msg, VoiceContext context
+            IVoiceMessage msg, VoiceContext context, Component... args
     ) {
         sendVoiceMsgPosBound(
                 level, pos,
                 senderName,
                 voiceId, defaultVoiceId,
                 msg.getId(), msg.getType().getId(),
-                context
+                context, args
         );
     }
 
@@ -63,14 +63,14 @@ public class VocalizedServerManager {
     public static void sendVoiceMsgPlayerBound(
             ServerPlayer player,
             ResourceLocation msgId, ResourceLocation msgTypeId,
-            VoiceContext context
+            VoiceContext context, Component... args
     ) {
         final IVocal vocal = (IVocal) player;
         sendVoiceMsgEntityBound(
                 player,
                 vocal.vocalized$getVoiceId(), vocal.vocalized$getDefaultVoiceId(),
                 msgId, msgTypeId,
-                context
+                context, args
         );
     }
 
@@ -92,18 +92,18 @@ public class VocalizedServerManager {
             Entity entity,
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
-            VoiceContext context
+            VoiceContext context, Component... args
     ) {
         final S2CVocalizedMsgEntityBound p = context.getEffect().overDimension() ?
                 new S2CVocalizedMsgEntityBound(
                         voiceId, defaultVoiceId,
                         msgId, msgTypeId,
-                        entity.getName(), context.getEffect()
+                        entity.getName(), context.getEffect(), args
                 ) :
                 new S2CVocalizedMsgEntityBound(
                         voiceId, defaultVoiceId,
                         msgId, msgTypeId,
-                        entity.getName(), context.getEffect(), entity
+                        entity.getName(), context.getEffect(), entity, args
                 );
         for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.left(entity))) {
             NetworkHandler.getInstance().channel.send(target, p);
@@ -136,11 +136,13 @@ public class VocalizedServerManager {
             Level level, Vec3 pos, Component senderName,
             ResourceLocation voiceId, ResourceLocation defaultVoiceId,
             ResourceLocation msgId, ResourceLocation msgTypeId,
-            VoiceContext context
+            VoiceContext context, Component... args
     ) {
         final S2CVocalizedMsgPosBound p = new S2CVocalizedMsgPosBound(
                 voiceId, defaultVoiceId,
-                msgId, msgTypeId, senderName, context.getEffect(), level.dimension(), pos
+                msgId, msgTypeId,
+                senderName, level.dimension(), pos,
+                args
         );
         for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.right(Vec3WithDim.create(level, pos)))) {
             NetworkHandler.getInstance().channel.send(target, p);
@@ -155,7 +157,7 @@ public class VocalizedServerManager {
     ) {
         final S2CVocalizedMsgPosBound p = new S2CVocalizedMsgPosBound(
                 voiceId, defaultVoiceId,
-                msgId, msgTypeId, context.getEffect(), level.dimension(), pos
+                msgId, msgTypeId, level.dimension(), pos
         );
         for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.right(Vec3WithDim.create(level, pos)))) {
             NetworkHandler.getInstance().channel.send(target, p);
