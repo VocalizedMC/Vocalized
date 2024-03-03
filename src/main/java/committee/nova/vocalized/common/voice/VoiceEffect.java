@@ -7,10 +7,6 @@ public enum VoiceEffect {
 
     private static final VoiceEffect[] valuesCache = VoiceEffect.values();
 
-    public boolean isRadio() {
-        return this.equals(RADIO);
-    }
-
     public boolean overDimension() {
         return this.equals(RADIO);
     }
