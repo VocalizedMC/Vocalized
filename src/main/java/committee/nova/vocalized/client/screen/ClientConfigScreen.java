@@ -41,9 +41,9 @@ public class ClientConfigScreen extends Screen {
     private static final int OPTIONS_LIST_ITEM_HEIGHT = 25;
     private static final int BUTTON_WIDTH = 160;
     private static final int BUTTON_HEIGHT = 20;
-    private static final int DONE_BUTTON_TOP_OFFSET = 26;
-    private static final int PLAY_BUTTON_TOP_HEIGHT = OPTIONS_LIST_ITEM_HEIGHT + 27;
-    private static final int BIO_TEXT_TOP_HEIGHT = PLAY_BUTTON_TOP_HEIGHT + 22;
+    private static final int BUTTON_INTERVAL = 10;
+    private static final int BUTTON_TOP_OFFSET = 26;
+    private static final int BIO_TEXT_TOP_HEIGHT = OPTIONS_LIST_ITEM_HEIGHT + OPTIONS_LIST_BOTTOM_OFFSET;
     private OptionsList optionsRowList;
     public Button playBio;
     public Button quit;
@@ -65,7 +65,7 @@ public class ClientConfigScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(g);
+        renderBackground(g, mouseX, mouseY, partialTicks);
         optionsRowList.render(g, mouseX, mouseY, partialTicks);
         g.drawCenteredString(font, title, width / 2, titleOffset, 0xFFFFFF);
         super.render(g, mouseX, mouseY, partialTicks);
@@ -84,9 +84,8 @@ public class ClientConfigScreen extends Screen {
     protected void init() {
         if (minecraft == null) return;
         optionsRowList = new OptionsList(
-                minecraft, width, height,
+                minecraft, width, height - (OPTIONS_LIST_TOP_HEIGHT + OPTIONS_LIST_BOTTOM_OFFSET),
                 OPTIONS_LIST_TOP_HEIGHT,
-                height - OPTIONS_LIST_BOTTOM_OFFSET,
                 OPTIONS_LIST_ITEM_HEIGHT
         );
         optionsRowList.addBig(voiceType);
@@ -102,8 +101,8 @@ public class ClientConfigScreen extends Screen {
                         b.active = false;
                     });
                 })
-                .bounds((width - BUTTON_WIDTH) / 2,
-                        PLAY_BUTTON_TOP_HEIGHT,
+                .bounds(width / 2 - BUTTON_WIDTH - (BUTTON_INTERVAL / 2),
+                        height - BUTTON_TOP_OFFSET,
                         BUTTON_WIDTH, BUTTON_HEIGHT)
                 .build()
         );
@@ -112,12 +111,12 @@ public class ClientConfigScreen extends Screen {
                     save();
                     getMinecraft().setScreen(parent);
                 })
-                .bounds((width - BUTTON_WIDTH) / 2,
-                        height - DONE_BUTTON_TOP_OFFSET,
+                .bounds(width / 2 + (BUTTON_INTERVAL / 2),
+                        height - BUTTON_TOP_OFFSET,
                         BUTTON_WIDTH, BUTTON_HEIGHT)
                 .build()
         );
-        addWidget(optionsRowList);
+        addRenderableWidget(optionsRowList);
     }
 
     @Override
@@ -158,10 +157,10 @@ public class ClientConfigScreen extends Screen {
     private void save() {
         ClientConfig.CFG.save();
         if (Minecraft.getInstance().getConnection() == null) return;
-        NetworkHandler.getInstance().channel.send(PacketDistributor.SERVER.noArg(), new C2SVocalizedVoiceChanged(
+        NetworkHandler.getInstance().channel.send(new C2SVocalizedVoiceChanged(
                 ClientConfig.getVoiceType().getIdentifier(),
                 ClientConfig.getVoiceType().getDefaultVoiceType().getIdentifier()
-        ));
+        ), PacketDistributor.SERVER.noArg());
     }
 
     public static Supplier<ConfigScreenHandler.ConfigScreenFactory> getFactory() {

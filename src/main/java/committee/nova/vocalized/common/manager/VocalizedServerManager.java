@@ -106,7 +106,7 @@ public class VocalizedServerManager {
                         entity.getName(), context.getEffect(), entity, args
                 );
         for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.left(entity))) {
-            NetworkHandler.getInstance().channel.send(target, p);
+            NetworkHandler.getInstance().channel.send(p, target);
         }
     }
 
@@ -128,7 +128,7 @@ public class VocalizedServerManager {
                         context.getEffect(), entity
                 );
         for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.left(entity))) {
-            NetworkHandler.getInstance().channel.send(target, p);
+            NetworkHandler.getInstance().channel.send(p, target);
         }
     }
 
@@ -145,7 +145,7 @@ public class VocalizedServerManager {
                 args
         );
         for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.right(Vec3WithDim.create(level, pos)))) {
-            NetworkHandler.getInstance().channel.send(target, p);
+            NetworkHandler.getInstance().channel.send(p, target);
         }
     }
 
@@ -160,7 +160,7 @@ public class VocalizedServerManager {
                 msgId, msgTypeId, level.dimension(), pos
         );
         for (final PacketDistributor.PacketTarget target : context.getTarget().determine(Either.right(Vec3WithDim.create(level, pos)))) {
-            NetworkHandler.getInstance().channel.send(target, p);
+            NetworkHandler.getInstance().channel.send(p, target);
         }
     }
 }

@@ -23,7 +23,7 @@ public class VoiceContexts {
                     e.ifLeft(p -> atomic.set(p.level().dimension()))
                             .ifRight(d -> atomic.set(d.level().dimension()));
                     final ResourceKey<Level> dim = atomic.get();
-                    return dim != null ? Collections.singletonList(PacketDistributor.DIMENSION.with(() -> dim)) : Collections.emptyList();
+                    return dim != null ? Collections.singletonList(PacketDistributor.DIMENSION.with(dim)) : Collections.emptyList();
                 })
                 .build();
     }
@@ -37,7 +37,7 @@ public class VoiceContexts {
                     final Vec3WithDim posWithDim = atomic.get();
                     if (posWithDim != null) {
                         final Vec3 pos = posWithDim.pos();
-                        return Collections.singletonList(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(
+                        return Collections.singletonList(PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(
                                 pos.x, pos.y, pos.z, radius, posWithDim.level().dimension()
                         )));
                     }
@@ -57,7 +57,7 @@ public class VoiceContexts {
                     if (server == null) return Collections.emptyList();
                     return server.getPlayerList().getPlayers().stream()
                             .filter(filter)
-                            .map(s -> PacketDistributor.PLAYER.with(() -> s))
+                            .map(PacketDistributor.PLAYER::with)
                             .toList();
                 })
                 .offset(offset)

@@ -17,9 +17,9 @@ public class ForgeClientEventHandler {
     public static void onLogin(EntityJoinLevelEvent event) {
         if (!FMLEnvironment.dist.isClient()) return;
         if (!event.getEntity().equals(Minecraft.getInstance().player)) return;
-        NetworkHandler.getInstance().channel.send(PacketDistributor.SERVER.noArg(), new C2SVocalizedVoiceChanged(
+        NetworkHandler.getInstance().channel.send(new C2SVocalizedVoiceChanged(
                 ClientConfig.getVoiceType().getIdentifier(),
                 ClientConfig.getVoiceType().getDefaultVoiceType().getIdentifier()
-        ));
+        ), PacketDistributor.SERVER.noArg());
     }
 }

@@ -9,12 +9,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class S2CVocalizedMsgEntityBound {
     private final ResourceLocation voiceId;
@@ -163,8 +162,7 @@ public class S2CVocalizedMsgEntityBound {
         for (final Component c : args) buf.writeComponent(c);
     }
 
-    public void handler(Supplier<NetworkEvent.Context> sup) {
-        final NetworkEvent.Context ctx = sup.get();
+    public void handler(CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             if (sendText) VocalizedClientManager.onReceivedVoiceMsgEntityBound(
                     voiceId, defaultVoiceId,

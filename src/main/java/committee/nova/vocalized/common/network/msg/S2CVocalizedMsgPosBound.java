@@ -8,12 +8,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class S2CVocalizedMsgPosBound {
     private final ResourceLocation voiceId;
@@ -102,8 +101,7 @@ public class S2CVocalizedMsgPosBound {
         for (final Component c : args) buf.writeComponent(c);
     }
 
-    public void handler(Supplier<NetworkEvent.Context> sup) {
-        final NetworkEvent.Context ctx = sup.get();
+    public void handler(CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             if (sendText) VocalizedClientManager.onReceivedVoiceMsgPosBound(
                     voiceId, defaultVoiceId,

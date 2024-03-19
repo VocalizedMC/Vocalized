@@ -5,8 +5,9 @@ import committee.nova.vocalized.common.network.msg.C2SVocalizedVoiceChanged;
 import committee.nova.vocalized.common.network.msg.S2CVocalizedMsgEntityBound;
 import committee.nova.vocalized.common.network.msg.S2CVocalizedMsgPosBound;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.Channel;
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.SimpleChannel;
 
 public class NetworkHandler {
     private static NetworkHandler instance;
@@ -24,12 +25,9 @@ public class NetworkHandler {
     }
 
     public NetworkHandler() {
-        channel = NetworkRegistry.newSimpleChannel(
-                new ResourceLocation(Vocalized.MODID, "msg"),
-                () -> NetworkRegistry.ACCEPTVANILLA,
-                NetworkRegistry.ACCEPTVANILLA::equals,
-                NetworkRegistry.ACCEPTVANILLA::equals
-        );
+        channel = ChannelBuilder.named(new ResourceLocation(Vocalized.MODID, "msg"))
+                .acceptedVersions(Channel.VersionTest.ACCEPT_VANILLA)
+                .simpleChannel();
         channel.messageBuilder(C2SVocalizedVoiceChanged.class, nextId())
                 .encoder(C2SVocalizedVoiceChanged::toBytes)
                 .decoder(C2SVocalizedVoiceChanged::new)

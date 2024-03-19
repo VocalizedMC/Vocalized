@@ -4,9 +4,7 @@ import committee.nova.vocalized.api.IVocal;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class C2SVocalizedVoiceChanged {
     private final ResourceLocation voiceId;
@@ -28,8 +26,7 @@ public class C2SVocalizedVoiceChanged {
         buf.writeResourceLocation(defaultVoiceId);
     }
 
-    public void handler(Supplier<NetworkEvent.Context> sup) {
-        final NetworkEvent.Context ctx = sup.get();
+    public void handler(CustomPayloadEvent.Context ctx) {
         final ServerPlayer player = ctx.getSender();
         if (player == null) return;
         final IVocal vocal = (IVocal) player;
